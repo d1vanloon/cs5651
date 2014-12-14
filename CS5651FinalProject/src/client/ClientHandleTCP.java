@@ -1,4 +1,4 @@
-package server;
+package client;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -15,11 +15,11 @@ import java.util.Random;
  * Handles TCP connections.
  * 
  */
-public class HandleTCP extends Thread {
+public class ClientHandleTCP extends Thread {
 
     private final static int BYTES_IN_MEGABYTES = 1048576;
 
-    private Socket client;
+    private Socket server;
     private final int whichPort;
     BufferedReader is;
     DataOutputStream os;
@@ -28,20 +28,21 @@ public class HandleTCP extends Thread {
     /**
      * Creates a new TCP handler.
      * 
-     * @param client
-     *            the connection to the client
+     * @param server
+     *            the connection to the server
      * @param whichPort
      *            which port to use
      */
-    public HandleTCP(Socket client, int whichPort) {
-        this.client = client;
+    public ClientHandleTCP(Socket server, int whichPort) {
+        
+        this.server = server;
         this.whichPort = whichPort;
         try {
 
             // Build the necessary streams from the client.
-            ins = client.getInputStream();
+            ins = server.getInputStream();
             is = new BufferedReader(new InputStreamReader(ins));
-            os = new DataOutputStream(client.getOutputStream());
+            os = new DataOutputStream(server.getOutputStream());
         } catch (IOException e) {
             System.out.println("Exception: " + e.getMessage());
         }
@@ -53,18 +54,18 @@ public class HandleTCP extends Thread {
      */
     public void run() {
         try {
-            if (whichPort == Server.TCP_UPLOAD_PORT)
+            if (whichPort == Client.TCP_UPLOAD_PORT)
+                sendData(os);
+            else if (whichPort == Client.TCP_DOWNLOAD_PORT)
                 receiveData(ins);
-            else if (whichPort == Server.TCP_DOWNLOAD_PORT)
-            sendData(os);
-            client.close();
+            server.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     /**
-     * Sends random data to the client to test the download bandwidth.
+     * Sends random data to the server to test the download bandwidth.
      * 
      * @param output
      *            the output stream to use
@@ -74,7 +75,7 @@ public class HandleTCP extends Thread {
     private void sendData(DataOutputStream output) throws IOException {
         double currentBytes = 0.0;
         int i = 0;
-        System.out.println("Trying to write 100 MB to the client via TCP...");
+        System.out.println("Trying to write 100 MB to the server via TCP...");
         try {
             // Create a 1MB buffer and fill it with random data
             ByteBuffer byteBuffer = ByteBuffer.allocate(BYTES_IN_MEGABYTES);
@@ -102,7 +103,7 @@ public class HandleTCP extends Thread {
     }
 
     /**
-     * Receives data from the client to test the upload bandwidth.
+     * Receives data from the server to test the upload bandwidth.
      * 
      * @param ins
      *            the input stream to use
@@ -110,7 +111,7 @@ public class HandleTCP extends Thread {
     private void receiveData(InputStream ins) {
         DataInputStream input = new DataInputStream(ins);
         System.out
-                .println("Waiting for the client to upload as much data as it'd like via TCP...");
+                .println("Waiting for the server to send as much data as it'd like via TCP...");
         // Prepare to receive data
         byte[] byteArray = new byte[BYTES_IN_MEGABYTES];
         ByteBuffer byteBuffer = ByteBuffer.allocate(BYTES_IN_MEGABYTES);

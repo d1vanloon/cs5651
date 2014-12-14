@@ -28,7 +28,7 @@ public class Client implements Runnable, ActionListener {
         this.serverAddress = serverAddress;
 
         // formatting the window
-        jFrame = new JFrame("Client Server");
+        jFrame = new JFrame("Client");
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jFrame.setLayout(new FlowLayout());
         jFrame.setSize(300, 320);
@@ -85,7 +85,7 @@ public class Client implements Runnable, ActionListener {
             public void run() {
                 try {
                     Socket connection = new Socket(serverAddress, TCP_UPLOAD_PORT);
-                    new ConnectionHandler(connection);
+                    new ClientConnectionHandler(connection);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -97,7 +97,7 @@ public class Client implements Runnable, ActionListener {
             public void run() {
                 try {
                     Socket connection = new Socket(serverAddress, TCP_DOWNLOAD_PORT);
-                    new ConnectionHandler(connection);
+                    new ClientConnectionHandler(connection);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

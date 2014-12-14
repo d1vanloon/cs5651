@@ -25,7 +25,7 @@ public class Server implements Runnable, ActionListener {
     
     public Server(){
     	//instantiate all the private instance fields 
-        jFrame = new JFrame("Chat Server");
+        jFrame = new JFrame("Server");
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jFrame.setLayout(new FlowLayout());
         jFrame.setSize(300,320);
@@ -126,10 +126,10 @@ public class Server implements Runnable, ActionListener {
         try {
             while (true) {
                 System.out
-                        .println("Listening for new TCP connections... on port: "
+                        .println("Server listening for new TCP connections on port: "
                                 + listen.getLocalPort());
                 Socket client = listen.accept();
-                new ConnectionHandler(client);
+                new ServerConnectionHandler(client);
             }
         } catch (Exception e) {
             e.printStackTrace();

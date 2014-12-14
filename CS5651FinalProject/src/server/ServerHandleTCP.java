@@ -1,4 +1,4 @@
-package client;
+package server;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -15,7 +15,7 @@ import java.util.Random;
  * Handles TCP connections.
  * 
  */
-public class HandleTCP extends Thread {
+public class ServerHandleTCP extends Thread {
 
     private final static int BYTES_IN_MEGABYTES = 1048576;
 
@@ -33,7 +33,7 @@ public class HandleTCP extends Thread {
      * @param whichPort
      *            which port to use
      */
-    public HandleTCP(Socket client, int whichPort) {
+    public ServerHandleTCP(Socket client, int whichPort) {
         this.client = client;
         this.whichPort = whichPort;
         try {
@@ -53,10 +53,10 @@ public class HandleTCP extends Thread {
      */
     public void run() {
         try {
-            if (whichPort == Client.TCP_UPLOAD_PORT)
-                sendData(os);
-            else if (whichPort == Client.TCP_DOWNLOAD_PORT)
+            if (whichPort == Server.TCP_UPLOAD_PORT)
                 receiveData(ins);
+            else if (whichPort == Server.TCP_DOWNLOAD_PORT)
+            sendData(os);
             client.close();
         } catch (IOException e) {
             e.printStackTrace();

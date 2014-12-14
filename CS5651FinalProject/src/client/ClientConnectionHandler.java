@@ -1,4 +1,4 @@
-package server;
+package client;
 
 import java.net.Socket;
 
@@ -6,16 +6,17 @@ import java.net.Socket;
  * Handles connections based on the type and port.
  *
  */
-public class ConnectionHandler {
+public class ClientConnectionHandler {
 
     private Socket client;
+
     /**
      * Creates a new ConnectionHandler.
      * 
      * @param client
      *            the connection to the client
      */
-    public ConnectionHandler(Socket client) {
+    public ClientConnectionHandler(Socket client) {
         this.client = client;
         run();
     }
@@ -25,20 +26,20 @@ public class ConnectionHandler {
      */
     public void run() {
         switch (client.getLocalPort()) {
-            case Server.TCP_UPLOAD_PORT:
+            case Client.TCP_UPLOAD_PORT:
                 testTcpUpload();
                 break;
-            case Server.TCP_DOWNLOAD_PORT:
+            case Client.TCP_DOWNLOAD_PORT:
                 testTcpDownload();
                 break;
         }
     }
 
     private void testTcpUpload() {
-        new HandleTCP(client, Server.TCP_UPLOAD_PORT);
+        new ClientHandleTCP(client, Client.TCP_UPLOAD_PORT);
     }
 
     private void testTcpDownload() {
-        new HandleTCP(client, Server.TCP_DOWNLOAD_PORT);
+        new ClientHandleTCP(client, Client.TCP_DOWNLOAD_PORT);
     }
 }
