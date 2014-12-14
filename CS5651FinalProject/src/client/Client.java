@@ -54,7 +54,7 @@ public class Client implements Runnable, ActionListener{
         @Override
       public void run(){
             try{
-           Socket = new Socket("localhost",8080);
+           Socket = new Socket("localhost",4444);
            oos = new ObjectOutputStream(Socket.getOutputStream());
            ois = new ObjectInputStream(Socket.getInputStream());
           //while this socket is available read the input from the server

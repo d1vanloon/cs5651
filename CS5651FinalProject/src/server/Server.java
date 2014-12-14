@@ -49,7 +49,7 @@ public class Server implements Runnable, ActionListener {
     @Override
     public void run(){
         try{
-           serverSocket = new ServerSocket(8080);
+           serverSocket = new ServerSocket(4444);
            clientSocket = serverSocket.accept();
            oos = new ObjectOutputStream(clientSocket.getOutputStream());
            ois = new ObjectInputStream(clientSocket.getInputStream());
