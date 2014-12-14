@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Random;
 
 /**
@@ -17,13 +18,14 @@ import java.util.Random;
  */
 public class ClientHandleTCP extends Thread {
 
-    private final static int BYTES_IN_MEGABYTES = 1048576;
+    public final static int BYTES_IN_MEGABYTES = 1048576;
 
     private Socket server;
     private final int whichPort;
     BufferedReader is;
     DataOutputStream os;
     InputStream ins;
+    private final Client client;
 
     /**
      * Creates a new TCP handler.
@@ -33,11 +35,12 @@ public class ClientHandleTCP extends Thread {
      * @param whichPort
      *            which port to use
      */
-    public ClientHandleTCP(Socket server, int whichPort) {
+    public ClientHandleTCP(Socket server, int whichPort, final Client client) {
         System.out.println("Handling TCP connection on port " + whichPort + "...");
         
         this.server = server;
         this.whichPort = whichPort;
+        this.client = client;
         try {
 
             // Build the necessary streams from the client.
@@ -100,6 +103,7 @@ public class ClientHandleTCP extends Thread {
             e.printStackTrace();
         } finally {
             output.close();
+            this.client.reportAndRetestUploadBandwidth(new Date(), currentBytes);
         }
     }
 
@@ -113,13 +117,14 @@ public class ClientHandleTCP extends Thread {
         DataInputStream input = new DataInputStream(ins);
         System.out
                 .println("Waiting for the server to send as much data as it'd like via TCP...");
+        double bytesReceived = 0.0;
         // Prepare to receive data
         byte[] byteArray = new byte[BYTES_IN_MEGABYTES];
         ByteBuffer byteBuffer = ByteBuffer.allocate(BYTES_IN_MEGABYTES);
         try {
             // Continuously receive data from the client, while it is available
             while (input.read() != -1) {
-                input.read(byteArray);
+                bytesReceived += input.read(byteArray);
                 byteBuffer.put(byteArray);
                 Arrays.fill(byteArray, (byte) 0);
                 byteBuffer.clear();
@@ -134,6 +139,7 @@ public class ClientHandleTCP extends Thread {
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
+            this.client.reportAndRetestDownloadBandwidth(new Date(), bytesReceived);
         }
     }
 }

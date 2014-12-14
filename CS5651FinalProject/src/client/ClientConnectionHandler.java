@@ -8,8 +8,9 @@ import java.net.Socket;
  */
 public class ClientConnectionHandler {
 
-    private Socket client;
+    private Socket server;
     private int whichPort;
+    private final Client client;
 
     /**
      * Creates a new ConnectionHandler.
@@ -19,9 +20,10 @@ public class ClientConnectionHandler {
      * @param whichPort
      *            the port to use
      */
-    public ClientConnectionHandler(Socket client, int whichPort) {
-        this.client = client;
+    public ClientConnectionHandler(Socket server, int whichPort, final Client client) {
+        this.server = server;
         this.whichPort = whichPort;
+        this.client = client;
         run();
     }
 
@@ -40,10 +42,10 @@ public class ClientConnectionHandler {
     }
 
     private void testTcpUpload() {
-        new ClientHandleTCP(client, Client.TCP_UPLOAD_PORT);
+        new ClientHandleTCP(server, Client.TCP_UPLOAD_PORT, this.client);
     }
 
     private void testTcpDownload() {
-        new ClientHandleTCP(client, Client.TCP_DOWNLOAD_PORT);
+        new ClientHandleTCP(server, Client.TCP_DOWNLOAD_PORT, this.client);
     }
 }
