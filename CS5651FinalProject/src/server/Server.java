@@ -1,6 +1,9 @@
 package server;
 
 import javax.swing.*;
+
+import shared.ConnectionHandler;
+
 import java.io.*;
 import java.net.*; 
 import java.awt.*; 
@@ -18,7 +21,9 @@ public class Server implements Runnable, ActionListener {
     private JTextArea jta; 
     private JScrollPane jScroll; 
     private JTextField jtfInput; 
-    private JButton btnSend; 
+    private JButton btnSend;
+    public static final int TCP_UPLOAD_PORT = 8080;
+    public static final int TCP_DOWNLOAD_PORT = 8000; 
     
     public Server(){
     	//instantiate all the private instance fields 
@@ -43,6 +48,8 @@ public class Server implements Runnable, ActionListener {
         jFrame.getContentPane().add(btnSend);
         jFrame.setVisible(true);
         
+        
+        setupConnectionMonitoring();
     }
     //Runnable method the creates a new server socket for the client to connect
     //to. 
@@ -82,6 +89,55 @@ public class Server implements Runnable, ActionListener {
             
         }
     }
+    
+    /**
+     * Starts the threads that monitor the connection quality.
+     */
+    public void setupConnectionMonitoring() {
+
+        // Listen for TCP upload requests
+        new Thread() {
+            public void run() {
+                try {
+                    spawnConnectionHandler(new ServerSocket(Server.TCP_UPLOAD_PORT));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+
+        // Listen for TCP download requests
+        new Thread() {
+            public void run() {
+                try {
+                    spawnConnectionHandler(new ServerSocket(Server.TCP_DOWNLOAD_PORT));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+    }
+
+    /**
+     * Spawns a new connection handler for the given socket.
+     * 
+     * @param listen
+     *            the socket for the connection
+     */
+    public void spawnConnectionHandler(ServerSocket listen) {
+        try {
+            while (true) {
+                System.out
+                        .println("Listening for new TCP connections... on port: "
+                                + listen.getLocalPort());
+                Socket client = listen.accept();
+                new ConnectionHandler(client);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
     /**
      * 
      * 
