@@ -60,7 +60,8 @@ public class Client implements Runnable, ActionListener {
     @Override
     public void run() {
         try {
-
+            this.testConnection();
+            
             Socket = new Socket(this.serverAddress, 4444);
             oos = new ObjectOutputStream(Socket.getOutputStream());
             ois = new ObjectInputStream(Socket.getInputStream());
@@ -76,6 +77,32 @@ public class Client implements Runnable, ActionListener {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+    }
+    
+    private void testConnection() {
+        // Test TCP upload
+        new Thread() {
+            public void run() {
+                try {
+                    Socket connection = new Socket(serverAddress, TCP_UPLOAD_PORT);
+                    new ConnectionHandler(connection);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+
+        // Test TCP download
+        new Thread() {
+            public void run() {
+                try {
+                    Socket connection = new Socket(serverAddress, TCP_DOWNLOAD_PORT);
+                    new ConnectionHandler(connection);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
     }
 
     // ActionListener

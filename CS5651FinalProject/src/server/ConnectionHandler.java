@@ -1,8 +1,6 @@
-package shared;
+package server;
 
 import java.net.Socket;
-
-import server.Server;
 
 /**
  * Handles connections based on the type and port.

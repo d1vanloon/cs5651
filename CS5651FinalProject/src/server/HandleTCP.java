@@ -1,4 +1,4 @@
-package shared;
+package server;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -10,8 +10,6 @@ import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Random;
-
-import server.Server;
 
 /**
  * Handles TCP connections.

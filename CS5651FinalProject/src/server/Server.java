@@ -2,8 +2,6 @@ package server;
 
 import javax.swing.*;
 
-import shared.ConnectionHandler;
-
 import java.io.*;
 import java.net.*; 
 import java.awt.*; 
