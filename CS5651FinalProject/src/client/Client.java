@@ -80,12 +80,15 @@ public class Client implements Runnable, ActionListener {
     }
     
     private void testConnection() {
+        System.out.println("Testing connection to server...");
+        
         // Test TCP upload
         new Thread() {
             public void run() {
                 try {
                     Socket connection = new Socket(serverAddress, TCP_UPLOAD_PORT);
-                    new ClientConnectionHandler(connection);
+                    System.out.println("Testing upload connection...");
+                    new ClientConnectionHandler(connection, TCP_UPLOAD_PORT);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -97,7 +100,8 @@ public class Client implements Runnable, ActionListener {
             public void run() {
                 try {
                     Socket connection = new Socket(serverAddress, TCP_DOWNLOAD_PORT);
-                    new ClientConnectionHandler(connection);
+                    System.out.println("Testing download connection...");
+                    new ClientConnectionHandler(connection, TCP_DOWNLOAD_PORT);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

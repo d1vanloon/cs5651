@@ -9,15 +9,19 @@ import java.net.Socket;
 public class ClientConnectionHandler {
 
     private Socket client;
+    private int whichPort;
 
     /**
      * Creates a new ConnectionHandler.
      * 
      * @param client
      *            the connection to the client
+     * @param whichPort
+     *            the port to use
      */
-    public ClientConnectionHandler(Socket client) {
+    public ClientConnectionHandler(Socket client, int whichPort) {
         this.client = client;
+        this.whichPort = whichPort;
         run();
     }
 
@@ -25,7 +29,7 @@ public class ClientConnectionHandler {
      * Runs the appropriate connection handler based on the port.
      */
     public void run() {
-        switch (client.getLocalPort()) {
+        switch (whichPort) {
             case Client.TCP_UPLOAD_PORT:
                 testTcpUpload();
                 break;

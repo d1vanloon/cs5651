@@ -34,6 +34,7 @@ public class ClientHandleTCP extends Thread {
      *            which port to use
      */
     public ClientHandleTCP(Socket server, int whichPort) {
+        System.out.println("Handling TCP connection on port " + whichPort + "...");
         
         this.server = server;
         this.whichPort = whichPort;
