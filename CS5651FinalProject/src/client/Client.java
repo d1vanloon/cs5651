@@ -17,21 +17,46 @@ public class Client implements Runnable, ActionListener {
 
     private JFrame jFrame;
 
-    private Socket Socket;
+    private Socket server;
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
     private JTextArea jta;
     private JScrollPane jScroll;
     private JTextField jtfInput;
     private JButton btnSend;
+    
+    /**
+     * Label used to report upload bandwidth.
+     */
     private volatile JLabel uploadBandwidthLabel;
+    
+    /**
+     * Label used to report download bandwidth.
+     */
     private volatile JLabel downloadBandwidthLabel;
     
+    /**
+     * The port to use for TCP upload tests.
+     */
     public static final int TCP_UPLOAD_PORT = 8080;
+    
+    /**
+     * The port to use for TCP download tests.
+     */
     public static final int TCP_DOWNLOAD_PORT = 8000;
+    
+    /**
+     * The address of the server.
+     */
     private final String serverAddress;
     
+    /**
+     * The time that the last upload test was started.
+     */
     private volatile Date startUpload;
+    /**
+     * The time that the last download test was started.
+     */
     private volatile Date startDownload;
     
     private final Client me;
@@ -57,6 +82,7 @@ public class Client implements Runnable, ActionListener {
         jScroll = new JScrollPane(jta);
         jtfInput = new JTextField(15);
         
+        // Create labels to report bandwidth
         uploadBandwidthLabel = new JLabel("Upload bandwidth: ");
         downloadBandwidthLabel = new JLabel("Download bandwidth: ");
 
@@ -68,6 +94,7 @@ public class Client implements Runnable, ActionListener {
         jFrame.getContentPane().add(jScroll);
         jFrame.getContentPane().add(jtfInput);
         jFrame.getContentPane().add(btnSend);
+        // Add the bandwidth labels
         jFrame.getContentPane().add(uploadBandwidthLabel);
         jFrame.getContentPane().add(downloadBandwidthLabel);
 
@@ -81,9 +108,9 @@ public class Client implements Runnable, ActionListener {
         try {
             this.testConnection();
             
-            Socket = new Socket(this.serverAddress, 4444);
-            oos = new ObjectOutputStream(Socket.getOutputStream());
-            ois = new ObjectInputStream(Socket.getInputStream());
+            server = new Socket(this.serverAddress, 4444);
+            oos = new ObjectOutputStream(server.getOutputStream());
+            ois = new ObjectInputStream(server.getInputStream());
             // while this socket is available read the input from the server
             while (true) {
                 Object input = ois.readObject();
@@ -98,16 +125,19 @@ public class Client implements Runnable, ActionListener {
         }
     }
     
+    /**
+     * Starts monitoring network upload and download bandwidth.
+     */
     private void testConnection() {
         System.out.println("Testing connection to server...");
-        
+
         testUpload();
 
         testDownload();
     }
 
     /**
-     * 
+     * Starts a network download bandwidth test.
      */
     private void testDownload() {
         // Test TCP download
@@ -115,9 +145,11 @@ public class Client implements Runnable, ActionListener {
             public void run() {
                 try {
                     startDownload = new Date();
-                    Socket connection = new Socket(serverAddress, TCP_DOWNLOAD_PORT);
+                    Socket connection = new Socket(serverAddress,
+                            TCP_DOWNLOAD_PORT);
                     System.out.println("Testing download connection...");
-                    new ClientConnectionHandler(connection, TCP_DOWNLOAD_PORT, me);
+                    new ClientConnectionHandler(connection, TCP_DOWNLOAD_PORT,
+                            me);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -126,7 +158,7 @@ public class Client implements Runnable, ActionListener {
     }
 
     /**
-     * 
+     * Starts a network upload bandwidth test.
      */
     private void testUpload() {
         // Test TCP upload
@@ -134,7 +166,8 @@ public class Client implements Runnable, ActionListener {
             public void run() {
                 try {
                     startUpload = new Date();
-                    Socket connection = new Socket(serverAddress, TCP_UPLOAD_PORT);
+                    Socket connection = new Socket(serverAddress,
+                            TCP_UPLOAD_PORT);
                     System.out.println("Testing upload connection...");
                     new ClientConnectionHandler(connection, TCP_UPLOAD_PORT, me);
                 } catch (IOException e) {
@@ -143,22 +176,45 @@ public class Client implements Runnable, ActionListener {
             }
         }.start();
     }
-    
-    public synchronized void reportAndRetestUploadBandwidth(Date finishDate, double bytesSent) {
+
+    /**
+     * Reports the upload bandwidth and tests again.
+     * 
+     * @param finishDate
+     *            the time that the last test finished
+     * @param bytesSent
+     *            the number of bytes that were sent in the last test
+     */
+    public synchronized void reportAndRetestUploadBandwidth(Date finishDate,
+            double bytesSent) {
         double megaBytesSent = bytesSent / ClientHandleTCP.BYTES_IN_MEGABYTES;
-        double seconds = (finishDate.getTime() - startUpload.getTime()) / MILLISECONDS_IN_SECOND;
-        
-        downloadBandwidthLabel.setText(String.format("Download bandwidth: %.2f MB/s", megaBytesSent / seconds));
-        
+        double seconds = (finishDate.getTime() - startUpload.getTime())
+                / MILLISECONDS_IN_SECOND;
+
+        downloadBandwidthLabel.setText(String.format(
+                "Download bandwidth: %.2f MB/s", megaBytesSent / seconds));
+
         testUpload();
     }
-    
-    public synchronized void reportAndRetestDownloadBandwidth(Date finishDate, double bytesReceived) {
-        double megaBytesReceived = bytesReceived / ClientHandleTCP.BYTES_IN_MEGABYTES;
-        double seconds = (finishDate.getTime() - startDownload.getTime()) / MILLISECONDS_IN_SECOND;
-        
-        uploadBandwidthLabel.setText(String.format("Upload bandwidth: %.2f MB/s", megaBytesReceived / seconds));
-        
+
+    /**
+     * Reports the download bandwidth and tests again.
+     * 
+     * @param finishDate
+     *            the time that the last test finished
+     * @param bytesReceived
+     *            the number of bytes that were received in the last test
+     */
+    public synchronized void reportAndRetestDownloadBandwidth(Date finishDate,
+            double bytesReceived) {
+        double megaBytesReceived = bytesReceived
+                / ClientHandleTCP.BYTES_IN_MEGABYTES;
+        double seconds = (finishDate.getTime() - startDownload.getTime())
+                / MILLISECONDS_IN_SECOND;
+
+        uploadBandwidthLabel.setText(String.format(
+                "Upload bandwidth: %.2f MB/s", megaBytesReceived / seconds));
+
         testDownload();
     }
 
