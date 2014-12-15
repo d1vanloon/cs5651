@@ -2,8 +2,11 @@ package client;
 
 import javax.swing.*;
 
+import port.PortScanner;
+
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.awt.*;
 import java.awt.event.*;
@@ -24,6 +27,7 @@ public class Client implements Runnable, ActionListener {
     private JScrollPane jScroll;
     private JTextField jtfInput;
     private JButton btnSend;
+    private JButton btnPortScanner = new JButton("Scan Ports");
     
     /**
      * Label used to report upload bandwidth.
@@ -48,7 +52,7 @@ public class Client implements Runnable, ActionListener {
     /**
      * The address of the server.
      */
-    private final String serverAddress;
+    private static String serverAddress;
 
     /**
      * The time that the last upload test was started.
@@ -65,16 +69,16 @@ public class Client implements Runnable, ActionListener {
      */
     private final Client me;
 
-    public Client(final String serverAddress) {
+    public Client(final String address) {
         me = this;
         
-        this.serverAddress = serverAddress;
+        this.serverAddress = address;
 
         // formatting the window
         jFrame = new JFrame("Client");
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jFrame.setLayout(new FlowLayout());
-        jFrame.setSize(300, 370);
+        jFrame.setSize(350, 370);
 
         // Create a thread for this client
         Thread myThread = new Thread(this);
@@ -94,6 +98,13 @@ public class Client implements Runnable, ActionListener {
         jtfInput.addActionListener(this);
         btnSend = new JButton("Send");
         btnSend.addActionListener(this);
+        
+        btnPortScanner.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+               new PortScanner(address);
+        }
+        });
+        
         // Add the separate gui objects to the Frame
         jFrame.getContentPane().add(jScroll);
         jFrame.getContentPane().add(jtfInput);
@@ -101,6 +112,7 @@ public class Client implements Runnable, ActionListener {
         // Add the bandwidth labels
         jFrame.getContentPane().add(uploadBandwidthLabel);
         jFrame.getContentPane().add(downloadBandwidthLabel);
+        jFrame.getContentPane().add(btnPortScanner);
 
         jFrame.setVisible(true);
 
@@ -109,14 +121,15 @@ public class Client implements Runnable, ActionListener {
     // run method the creates the socket and writes to and from it
     @Override
     public void run() {
+    	
         try {
             this.testConnection();
-            
-            server = new Socket(this.serverAddress, 4444);
+            server = new Socket(serverAddress, 4444);
             oos = new ObjectOutputStream(server.getOutputStream());
             ois = new ObjectInputStream(server.getInputStream());
             // while this socket is available read the input from the server
             while (true) {
+            	
                 Object input = ois.readObject();
                 jta.setText(jta.getText() + "server says: " + (String) input
                         + "\n");

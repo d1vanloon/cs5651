@@ -31,29 +31,34 @@ public class PortScanner extends Frame {
 
     JButton scan = new JButton("Scan");
     JButton reset = new JButton("RESET");
+    JButton showOpenPorts = new JButton("Ports Open");
+    
+    JFrame openPorts = new JFrame("Open Ports");
+    JTextArea openPortList = new JTextArea();
+    
 
     // constructor
-    public PortScanner() {
-        buildGUI();
+    public PortScanner(String host) {
+        buildGUI(host);
     }
 
     // method to build the graphical uyser interface
-    public void buildGUI() {
+    public void buildGUI(String host) {
+    	
+    	TARGET = host;
         main.setLayout(new GridLayout(5, 1));
         main.setSize(300, 320);
         main.setResizable(false);
+       
+        openPorts.setSize(300,320);
+        openPorts.setResizable(false);
+        openPorts.setVisible(false); 
+        openPorts.add(openPortList);
+        
         Panel upperPanel = new Panel(new GridLayout(3, 3));
 
         lTitle.setFont(new Font("Impact", Font.BOLD, 20));
         main.add(lTitle);
-
-        lTarget.setForeground(Color.blue);
-        upperPanel.add(lTarget);
-
-        tfTarget.setForeground(Color.green);
-        tfTarget.setFocusable(true);
-        tfTarget.requestFocus();
-        upperPanel.add(tfTarget);
 
         lPortStart.setForeground(Color.blue);
         upperPanel.add(lPortStart);
@@ -73,10 +78,14 @@ public class PortScanner extends Frame {
         main.add(upperPanel);
 
         Panel lowerPanel = new Panel();
+        showOpenPorts.setEnabled(false);
         JLabel space = new JLabel();
         lowerPanel.add(scan);
         lowerPanel.add(space);
         lowerPanel.add(reset);
+        lowerPanel.add(space);
+        lowerPanel.add(showOpenPorts);
+        
         main.add(lowerPanel);
 
         scroll.setViewportView(message);
@@ -114,13 +123,15 @@ public class PortScanner extends Frame {
                 resetAction();
             }
         });
+        showOpenPorts.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                openPorts.setVisible(true);
+            }
+        });
     }
 
     public void scanAction() {
-        if (tfTarget.getText().equals("")) {
-            message.setText("Enter a TARGET");
-            return;
-        } else if (tfPortStart.getText().equals("")) {
+        if (tfPortStart.getText().equals("")) {
             message.setText("Enter a STARTING PORT");
             return;
         } else if (tfPortEnd.getText().equals("")) {
@@ -137,7 +148,7 @@ public class PortScanner extends Frame {
                 scan.setEnabled(false);
                 reset.setText("Stop");
 
-                TARGET = tfTarget.getText();
+                //TARGET = tfTarget.getText();
                 PORT_START = Integer.parseInt(tfPortStart.getText());
                 PORT_END = Integer.parseInt(tfPortEnd.getText());
 
@@ -148,15 +159,17 @@ public class PortScanner extends Frame {
                     try {
                         SOCK = new Socket(TARGET, i);
                         message.append("Port: " + i + " is open\n");
-                        JOptionPane.showMessageDialog(null, "Port: " + i
-                                + " is open\n");
+                        openPortList.append("Port: " + i + " is open\n");
+                        
                         SOCK.close();
                     } catch (Exception x) {
                         message.append("Port: " + i + " is closed\n");
                         continue;
                     }
                 }
+                JOptionPane.showMessageDialog(null, "Port Scan Complete");
                 scan.setEnabled(true);
+                showOpenPorts.setEnabled(true);
                 reset.setText("RESET");
                 lStatus.setText("Press Scan to Start");
             }
@@ -166,16 +179,13 @@ public class PortScanner extends Frame {
 
     public void resetAction() {
         message.setText("");
+        openPortList.setText("");
         tfTarget.setText("");
         tfPortStart.setText("");
         tfPortEnd.setText("");
 
     }
 
-    public static void main(String args[]) {
-
-        new PortScanner();
-
-    }
+    
 
 }

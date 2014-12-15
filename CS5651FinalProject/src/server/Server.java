@@ -2,8 +2,12 @@ package server;
 
 import javax.swing.*;
 
+import client.Client;
+import port.PortScanner;
+
 import java.io.*;
 import java.net.*; 
+import java.util.ArrayList;
 import java.awt.*; 
 import java.awt.event.*;
 /**
@@ -22,6 +26,9 @@ public class Server implements Runnable, ActionListener {
     private JButton btnSend;
     public static final int TCP_UPLOAD_PORT = 8080;
     public static final int TCP_DOWNLOAD_PORT = 8000; 
+    
+    public static ArrayList<Socket> connectionArray = new ArrayList<Socket>();
+    public static ArrayList<String> currentUsers = new ArrayList<String>();
     
     public Server(){
     	//instantiate all the private instance fields 
@@ -54,14 +61,18 @@ public class Server implements Runnable, ActionListener {
     @Override
     public void run(){
         try{
-           serverSocket = new ServerSocket(4444);
-           clientSocket = serverSocket.accept();
-           oos = new ObjectOutputStream(clientSocket.getOutputStream());
-           ois = new ObjectInputStream(clientSocket.getInputStream());
+        	ArrayList<Thread> threads = new ArrayList<Thread>();
+        	 serverSocket = new ServerSocket(4444);
+             clientSocket = serverSocket.accept();
+      	   oos = new ObjectOutputStream(clientSocket.getOutputStream());
+           ois = new ObjectInputStream(clientSocket.getInputStream());              
+
+    
+           
            while(true){
-               Object input = ois.readObject(); 
+        	   Object input = ois.readObject(); 
                jta.setText(jta.getText() + "client says: " + (String)input + "\n");
-              
+               
            }
            
         }
@@ -144,15 +155,15 @@ public class Server implements Runnable, ActionListener {
     //main method
     public static void main(String[] args) {
         // TODO code application logic here
-        SwingUtilities.invokeLater(new Runnable(){
+    	SwingUtilities.invokeLater(new Runnable(){
             @Override
             public void run(){
-                new Server();
+            	new Server();
             }
         });
         
     }
-    
+
 }
 
 
