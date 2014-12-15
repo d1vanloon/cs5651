@@ -29,27 +29,27 @@ public class Client implements Runnable, ActionListener {
      * Label used to report upload bandwidth.
      */
     private volatile JLabel uploadBandwidthLabel;
-    
+
     /**
      * Label used to report download bandwidth.
      */
     private volatile JLabel downloadBandwidthLabel;
-    
+
     /**
      * The port to use for TCP upload tests.
      */
     public static final int TCP_UPLOAD_PORT = 8080;
-    
+
     /**
      * The port to use for TCP download tests.
      */
     public static final int TCP_DOWNLOAD_PORT = 8000;
-    
+
     /**
      * The address of the server.
      */
     private final String serverAddress;
-    
+
     /**
      * The time that the last upload test was started.
      */
@@ -59,6 +59,10 @@ public class Client implements Runnable, ActionListener {
      */
     private volatile Date startDownload;
     
+    /**
+     * A reference to this object. Used in anonymous inner classes that cannot
+     * use *this*.
+     */
     private final Client me;
 
     public Client(final String serverAddress) {
