@@ -23,3 +23,4 @@ The client application has the following responsibilities:
 * Establish connection to a server
 * Send messages to the server
 * Receive messages from the server
+* Monitor the connection bandwidth to the server
