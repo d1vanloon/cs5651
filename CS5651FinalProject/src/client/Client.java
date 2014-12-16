@@ -18,8 +18,15 @@ import java.awt.event.*;
 public class Client implements Runnable, ActionListener {
     private static final int MILLISECONDS_IN_SECOND = 1000;
 
+    //private instance fields for login window
+    private JFrame login; 
+    private JTextField username; 
+    private JLabel user = new JLabel("username");
+    private JButton close = new JButton("close");
+    private static String clientName = "";
+    
+    //private instance fields for the client chat window
     private JFrame jFrame;
-
     private Socket server;
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
@@ -73,12 +80,12 @@ public class Client implements Runnable, ActionListener {
         me = this;
         
         this.serverAddress = address;
-
+   
         // formatting the window
         jFrame = new JFrame("Client");
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jFrame.setLayout(new FlowLayout());
-        jFrame.setSize(350, 370);
+        jFrame.setSize(350, 470);
 
         // Create a thread for this client
         Thread myThread = new Thread(this);
@@ -89,7 +96,8 @@ public class Client implements Runnable, ActionListener {
         jta.setLineWrap(true);
         jScroll = new JScrollPane(jta);
         jtfInput = new JTextField(15);
-        
+        Panel lower = new Panel();
+        lower.setLayout(new GridLayout(3,1));
         // Create labels to report bandwidth
         uploadBandwidthLabel = new JLabel("Upload bandwidth: ");
         downloadBandwidthLabel = new JLabel("Download bandwidth: ");
@@ -110,10 +118,10 @@ public class Client implements Runnable, ActionListener {
         jFrame.getContentPane().add(jtfInput);
         jFrame.getContentPane().add(btnSend);
         // Add the bandwidth labels
-        jFrame.getContentPane().add(uploadBandwidthLabel);
-        jFrame.getContentPane().add(downloadBandwidthLabel);
-        jFrame.getContentPane().add(btnPortScanner);
-
+        lower.add(uploadBandwidthLabel);
+        lower.add(downloadBandwidthLabel);
+        lower.add(btnPortScanner);
+        jFrame.getContentPane().add(lower);
         jFrame.setVisible(true);
 
     }
@@ -251,6 +259,10 @@ public class Client implements Runnable, ActionListener {
 
         }
 
+    }
+    
+    public static String getClientName(){
+    	return clientName;
     }
 
     /**

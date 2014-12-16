@@ -64,19 +64,20 @@ public class Server implements Runnable, ActionListener {
 	@Override
 	public void run() {
 		try {
-			ArrayList<Thread> threads = new ArrayList<Thread>();
+			
 			serverSocket = new ServerSocket(4444);
 			while (true) {
 				Socket clientSocket = serverSocket.accept();
 				System.out.println("Accepted new client connection.");
+				Thread t = new Thread(new ServerHandleChat(new ObjectInputStream(
+						clientSocket.getInputStream()) , this.jta));
+				t.start();
 				this.outputStreams.add(new ObjectOutputStream(clientSocket
 						.getOutputStream()));
-				new ServerHandleChat(new ObjectInputStream(
-						clientSocket.getInputStream()), this.jta).run();
-				System.out.println("Dispatched client connection.");
+				
 			}
 				
-				//new Thread(this).start();
+			
 
 		} catch (IOException e) {
 			e.printStackTrace();

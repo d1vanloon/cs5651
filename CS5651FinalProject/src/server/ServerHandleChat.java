@@ -5,7 +5,9 @@ import java.io.ObjectInputStream;
 
 import javax.swing.JTextArea;
 
-public class ServerHandleChat extends Thread {
+import client.Client;
+
+public class ServerHandleChat extends Thread implements Runnable {
 
 	private final ObjectInputStream ois;
 	private volatile JTextArea textArea;
@@ -25,7 +27,7 @@ public class ServerHandleChat extends Thread {
 			try {
 				input = ois.readObject();
 				System.out.println("client says: " + (String) input);
-				textArea.setText(textArea.getText() + "client says: "
+				textArea.setText(textArea.getText() +  "client says: "
 						+ (String) input + "\n");
 			} catch (ClassNotFoundException | IOException e) {
 				// TODO Auto-generated catch block
