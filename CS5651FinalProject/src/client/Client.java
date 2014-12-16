@@ -123,7 +123,7 @@ public class Client implements Runnable, ActionListener {
     public void run() {
     	
         try {
-            this.testConnection();
+            //this.testConnection();
             server = new Socket(serverAddress, 4444);
             oos = new ObjectOutputStream(server.getOutputStream());
             ois = new ObjectInputStream(server.getInputStream());
@@ -244,6 +244,7 @@ public class Client implements Runnable, ActionListener {
                 oos.writeObject(jtfInput.getText());
                 jta.setText(jta.getText() + "you say: " + jtfInput.getText()
                         + "\n");
+                jtfInput.setText("");
             } catch (IOException ae) {
                 ae.printStackTrace();
             }
