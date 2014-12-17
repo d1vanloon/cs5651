@@ -79,7 +79,7 @@ public class ClientHandleTCP extends Thread {
     private void sendData(DataOutputStream output) throws IOException {
         double currentBytes = 0.0;
         int i = 0;
-        //System.out.println("Trying to write 100 MB to the server via TCP...");
+        //System.out.println("Trying to write 2 MB to the server via TCP...");
         try {
             // Create a 1MB buffer and fill it with random data
             ByteBuffer byteBuffer = ByteBuffer.allocate(BYTES_IN_MEGABYTES);
@@ -88,8 +88,8 @@ public class ClientHandleTCP extends Thread {
             byteBuffer.put(byteArray);
             byteBuffer.flip();
 
-            // Write 100 MB to the output stream
-            while (currentBytes <= (BYTES_IN_MEGABYTES * 100)) {
+            // Write 10 MB to the output stream
+            while (currentBytes <= (BYTES_IN_MEGABYTES * 2)) {
                 output.write(byteBuffer.array(), 0, BYTES_IN_MEGABYTES);
                 byteBuffer.clear();
                 byteBuffer.put(byteArray);
@@ -97,7 +97,7 @@ public class ClientHandleTCP extends Thread {
                 i++;
                 currentBytes = (i * BYTES_IN_MEGABYTES);
             }
-            //System.out.println("Finished writing 100 MB via TCP.");
+            //System.out.println("Finished writing 2 MB via TCP.");
             output.writeBytes("Content-Type: random/bytes\r\n\r\n");
         } catch (Exception e) {
             e.printStackTrace();

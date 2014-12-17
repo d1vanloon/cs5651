@@ -216,8 +216,8 @@ public class Client implements Runnable, ActionListener {
         double seconds = (finishDate.getTime() - startUpload.getTime())
                 / MILLISECONDS_IN_SECOND;
 
-        downloadBandwidthLabel.setText(String.format(
-                "Download bandwidth: %.2f MB/s", megaBytesSent / seconds));
+        uploadBandwidthLabel.setText(String.format(
+                "Upload bandwidth: %.2f MB/s", megaBytesSent / seconds));
 
         testUpload();
     }
@@ -237,8 +237,8 @@ public class Client implements Runnable, ActionListener {
         double seconds = (finishDate.getTime() - startDownload.getTime())
                 / MILLISECONDS_IN_SECOND;
 
-        uploadBandwidthLabel.setText(String.format(
-                "Upload bandwidth: %.2f MB/s", megaBytesReceived / seconds));
+        downloadBandwidthLabel.setText(String.format(
+                "Download bandwidth: %.2f MB/s", megaBytesReceived / seconds));
 
         testDownload();
     }
@@ -273,7 +273,7 @@ public class Client implements Runnable, ActionListener {
         // TODO code application logic here
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                new Client("localhost");
+                new Client("54.149.190.175");
             }
         });
     }
