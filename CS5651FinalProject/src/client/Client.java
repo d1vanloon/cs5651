@@ -79,7 +79,7 @@ public class Client implements Runnable, ActionListener {
     public Client(final String address) {
         me = this;
         
-        this.serverAddress = address;
+        serverAddress = address;
    
         // formatting the window
         jFrame = new JFrame("Client");
@@ -131,7 +131,7 @@ public class Client implements Runnable, ActionListener {
     public void run() {
     	
         try {
-            //this.testConnection();
+            this.testConnection();
             server = new Socket(serverAddress, 4444);
             oos = new ObjectOutputStream(server.getOutputStream());
             ois = new ObjectInputStream(server.getInputStream());
