@@ -88,8 +88,8 @@ public class ClientHandleTCP extends Thread {
             byteBuffer.put(byteArray);
             byteBuffer.flip();
 
-            // Write 10 MB to the output stream
-            while (currentBytes <= (BYTES_IN_MEGABYTES * 2)) {
+            // Write 1 MB to the output stream
+            while (currentBytes <= (BYTES_IN_MEGABYTES * 1)) {
                 output.write(byteBuffer.array(), 0, BYTES_IN_MEGABYTES);
                 byteBuffer.clear();
                 byteBuffer.put(byteArray);
@@ -97,7 +97,7 @@ public class ClientHandleTCP extends Thread {
                 i++;
                 currentBytes = (i * BYTES_IN_MEGABYTES);
             }
-            //System.out.println("Finished writing 2 MB via TCP.");
+            //System.out.println("Finished writing 1 MB via TCP.");
             output.writeBytes("Content-Type: random/bytes\r\n\r\n");
         } catch (Exception e) {
             e.printStackTrace();
